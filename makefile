@@ -17,10 +17,3 @@ test: $(FILES)
 test-win: $(FILES)
 	figlet "LD47 [WIN]" -fshadow | lolcat
 	$(MINGW) $(FILES) $(LIBS) $(CXXFLAGS) $(MINGWFLAGS) -o bin/win/test.exe
-
-test-web-wasm: $(FILES)
-	figlet "LD47 [WEB/WASM]" -fshadow | lolcat
-	$(EMXX) -s WASM=1  $(FILES) $(CXXFLAGS) $(EMXXFLAGS) -o bin/web/wasm/index.html
-test-web-js: $(FILES)
-	figlet "LD47 [WEB/JS]" -fshadow | lolcat
-	$(EMXX) -s WASM=0 $(FILES) $(CXXFLAGS) $(EMXXFLAGS) -o bin/web/js/index.html
