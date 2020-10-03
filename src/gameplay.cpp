@@ -1,11 +1,10 @@
 #include "gameplay.h"
 using namespace bj;
 #include "mapLoader.h"
-#include "snake.h"
-#include "consumable.h"
+#include "gate.h"
 
 static MapLoader ml;
-static Snake* snake;
+Snake* Gameplay::snake;
 
 void Gameplay::onStart()
 {
@@ -25,8 +24,8 @@ void Gameplay::onStart()
 				snake = self->objs[ii]->getComponent<Snake>();
 				break;
 			}
-		case 'c':
-			self->objs[i]->addComponent(new Consumable(self->objs[i], 16));
+		case 'G':
+			self->objs[i]->addComponent(new Gate(self->objs[i]));
 			break;
 		case '#':
 			self->objs[i]->addComponent(new BasicRen(self->objs[i], {155, 55, 55, 55}));

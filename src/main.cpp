@@ -7,6 +7,7 @@ int BJ_MULP_MAIN()
 {
 	initParams ip{};
 	ip.win_title = "OrObOrOs";
+	ip.win_h = 960;
 
 	ip.scenes = new Scene*{new Gameplay{}};
 	ip.nscenes = 1;

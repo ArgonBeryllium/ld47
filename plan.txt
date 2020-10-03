@@ -1,22 +1,22 @@
  =TODO=
+- clean up, define screen bounds and level format
+- level design
+	- have a list of subversions and use them in different ways
 - global state
 	- level number&file map
 	- ui management
+	- time forking
 	- reset hotkey
-- level design (randomised???)
-	- have a list of subversions and use them in different ways
 - assets
 	decide on setting
 	sprites:
 		snake
 		maze
-		consumables
-		portals
+		gates
 	sounds:
 		move
-		(teleport)
-		consume
-		fail
+		teleport
+		reset
 		success
 	music:
 		main theme (2 versions?)
@@ -27,6 +27,7 @@
 		- volume
 		- size
 === CUTOFF
+- screenshake
 - animation system
 - intro
 - ending

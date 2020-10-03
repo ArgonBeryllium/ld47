@@ -1,5 +1,6 @@
 #include "snake.h"
-#include "consumable.h"
+#include "gate.h"
+#include "manager.h"
 
 Snake::Snake(GameObj* po, const uint8_t& length_) : ecs::Com(BehSys::getInstance(), po), length(length_)
 {
@@ -26,7 +27,6 @@ void Snake::onEvent(const ecs::Event& e)
 			shitrndr::FillRect(parentObj->transform.getScreenRect());
 			break;
 		case bj::ecs::Event::keyD:
-		case bj::ecs::Event::keyH:
 			switch(e.key)
 			{
 				default: break;
@@ -34,6 +34,11 @@ void Snake::onEvent(const ecs::Event& e)
 				case SDLK_d: move( 1, 0); break;
 				case SDLK_w: move( 0,-1); break;
 				case SDLK_s: move( 0, 1); break;
+				
+				case SDLK_SPACE:
+						if(onGate())
+							Manager::switchPlanes();
+						break;
 			}
 			break;
 	}
@@ -42,18 +47,21 @@ void Snake::onEvent(const ecs::Event& e)
 bool Snake::canMove(const int& x, const int& y)
 {
 	v2f dp = parentObj->transform.pos + v2f{(float)x, (float)y};
+
 	for(auto& p : parentObj->parentScene->getObjs())
 	{
 		if((p.second->transform.pos - dp).getLength() < .5)
 		{
+			/*
 			if(p.second->getComponent<Consumable>())
 			{
 				p.second->getComponent<Consumable>()->consume();
 				return 1;
-			}
+			}*/
+			if(p.second->getComponent<Gate>()) return 1;
 			if(p.second==tail[length-1])
 			{
-				//win lol
+				//Manager::won = 1;
 				return 1;
 			}
 			return 0;
@@ -69,4 +77,12 @@ void Snake::move(const int& x, const int& y)
 		tail[i]->transform.pos = tail[i-1]->transform.pos;
 	tail[0]->transform.pos = parentObj->transform.pos;
 	parentObj->transform.pos += v2f((float)x, (float)y);
+}
+
+bool Snake::onGate()
+{
+	for(auto& p : parentObj->parentScene->getObjs())
+		if((p.second->transform.pos - parentObj->transform.pos).getLength() < .5 && p.second->getComponent<Gate>())
+			return 1;
+	return 0;
 }

@@ -4,7 +4,7 @@
 struct Manager
 {
 	Manager() = delete;
-	void init();
-	Snake* snake;
-	bool won;
+	static void init();
+	static bool won;
+	static void switchPlanes();
 };

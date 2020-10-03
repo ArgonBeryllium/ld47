@@ -12,4 +12,6 @@ struct Snake : public ecs::Com
 	void onEvent(const ecs::Event& e) override;
 	bool canMove(const int& x, const int& y);
 	void move(const int& x, const int& y);
+
+	bool onGate();
 };
