@@ -1,0 +1,34 @@
+ =TODO=
+- global state
+	- level number&file map
+	- ui management
+	- reset hotkey
+- level design (randomised???)
+	- have a list of subversions and use them in different ways
+- assets
+	decide on setting
+	sprites:
+		snake
+		maze
+		consumables
+		portals
+	sounds:
+		move
+		(teleport)
+		consume
+		fail
+		success
+	music:
+		main theme (2 versions?)
+- menu
+	- button
+	- play
+	- settings
+		- volume
+		- size
+=== CUTOFF
+- animation system
+- intro
+- ending
+- level select
+- tutorial

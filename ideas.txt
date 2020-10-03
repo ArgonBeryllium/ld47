@@ -1,0 +1,24 @@
+== BRAINSTORMING | THEME: STUCK IN A LOOP ==
+
+ =MECHANICS=
+- replaying the same level | RE: PETE
+- rolling in a wheel | TUMBLE
+- swinging in a rope | TIGHT PLACE
+- trying to eat your own tail | OROBOROS
+
+ =STORY=
+- reliving the same event from different perspectives
+
+ =GAMES=
+
+ == IDEA DEVELOPMENT ==
+ 
+ =OROBOROS=
+- mood: ancient and ominous undercut by humour
+- gameplay: physics-based linked snake
+	- eat enough to be able to eat your own tail?
+	- go through a maze(tile-based becomes an option)?
+	- tail has a mind of its own?
+		- keeps defending itself from you using things it finds laying around?
+	- find your own tail in a sea of others?
+	- tie yourself in a knot?

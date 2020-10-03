@@ -6,7 +6,7 @@ LIBS=-lSDL2 -lbj -lSDL2_mixer
 WINLIBS=-lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer 
 CXXFLAGS=--std=c++17
 MINGWFLAGS=-static-libgcc -static-libstdc++ -Wl,-Bstatic -lstdc++ -lpthread
-FILES=src/main.cpp
+FILES=src/*.cpp
 
 test: $(FILES)
 	figlet "LD47" -fshadow | lolcat
