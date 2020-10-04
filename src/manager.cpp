@@ -10,8 +10,11 @@ Snake* Manager::snake;
 float Manager::lGap = 5;
 static SDL_Texture* wtex; 
 
+Mix_Chunk* c_gate, *c_win;
 void Manager::init()
 {
+	c_gate = fileIO::loadSound("res/gate.wav");
+	c_win = fileIO::loadSound("res/choose.wav");
 	ml = new MapLoader();
 	ml->parseTileSym = [](MapLoader* self, const float& x, const float& y, uint16_t& i, const char& id)
 	{
@@ -69,14 +72,12 @@ void Manager::loadLevel(uint8_t i)
 	wScl = v2f{(float)shitrndr::WindowProps::getWidth(), (float)shitrndr::WindowProps::getHeight()} * SceneManager::getActiveScene()->cam.getScreenspaceScalar();
 }
 
-Mix_Chunk* c_gate;
 void Manager::switchPlanes()
 {
 	SceneManager::getActiveScene()->cam.pos.y += (switched?-1:1) * lGap;
 	snake->parentObj->transform.pos.y += (switched?-1:1) * lGap;
 	switched=!switched;
 	Gameplay::shakeCam(.2, .1);
-	if(!c_gate) c_gate = fileIO::loadSound("res/gate.wav");
 	Audio::playSound(c_gate, .4);
 	snake->canMove(0, 0);
 }
@@ -91,5 +92,6 @@ void Manager::win()
 	won = 1;
 	score += cicl;
 	Gameplay::shakeCam(.3, .2);
+	Audio::playSound(c_win, .55);
 	snake->updateSprites();
 }

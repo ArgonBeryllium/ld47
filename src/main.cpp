@@ -22,6 +22,8 @@ int BJ_MULP_MAIN()
 	UI::loadFont("res/font.ttf", .15);
 	Manager::init();
 
+	Audio::loopSound(fileIO::loadSound("res/bgaudio.wav"));
+
 	SDL_SetWindowIcon(shitrndr::win, IMG_Load("res/icon.png"));
 
 	Game::start();
