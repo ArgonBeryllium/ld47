@@ -55,7 +55,7 @@ void Manager::init()
 uint8_t Manager::cicl = 0;
 uint8_t Manager::score = 0;
 bool Manager::won;
-static bool switched = 0;
+bool Manager::switched = 0;
 void Manager::loadLevel(uint8_t i)
 {
 	ml->loadFile(("res/map_"+std::to_string(i)+".map").c_str());
@@ -67,11 +67,16 @@ void Manager::loadLevel(uint8_t i)
 	wPos = SceneManager::getActiveScene()->cam.getWorldPoint({0,0});
 	wScl = v2f{(float)shitrndr::WindowProps::getWidth(), (float)shitrndr::WindowProps::getHeight()} * SceneManager::getActiveScene()->cam.getScreenspaceScalar();
 }
+
+Mix_Chunk* c_gate;
 void Manager::switchPlanes()
 {
 	SceneManager::getActiveScene()->cam.pos.y += (switched?-1:1) * lGap;
 	snake->parentObj->transform.pos.y += (switched?-1:1) * lGap;
 	switched=!switched;
+	Gameplay::shakeCam(.2, .1);
+	if(!c_gate) c_gate = fileIO::loadSound("res/gate.wav");
+	Audio::playSound(c_gate, .4);
 	if(snake->parentObj->transform.pos == snake->tail[snake->length-1]->transform.pos) win();
 }
 
@@ -84,4 +89,5 @@ void Manager::win()
 {
 	won = 1;
 	score += cicl;
+	Gameplay::shakeCam(.3, .2);
 }

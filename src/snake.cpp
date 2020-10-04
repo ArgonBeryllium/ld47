@@ -2,17 +2,21 @@
 #include "consumable.h"
 #include "gate.h"
 #include "manager.h"
+#include "gameplay.h"
 
+static Mix_Chunk* c_move;
 Snake::Snake(GameObj* po, const uint8_t& length_) : ecs::Com(BehSys::getInstance(), po), length(length_)
 {
+	if(!c_move)c_move = fileIO::loadSound("res/move.wav"); 
 	tail = new GameObj*[length];
 	for(uint8_t i = 0; i < length; i++)
 		tail[i] = new GameObj();
 }
-static SDL_Texture* tex;
+static SDL_Texture* tex, *tex_alt;
 void Snake::start()
 {
 	if(!tex) tex = fileIO::loadImage("res/snake.png");
+	if(!tex_alt) tex_alt = fileIO::loadImage("res/snake-alt.png");
 	for(uint8_t i = length; i != 0; i--)
 	{
 		parentObj->parentScene->instantiate(tail[i-1])->transform.pos = parentObj->transform.pos;
@@ -32,7 +36,15 @@ void Snake::onEvent(const ecs::Event& e)
 				for(uint8_t i = 0; i != length; i++)
 				{
 					 SpriteRen* sr = tail[i]->getComponent<SpriteRen>();
-					 sr->offset.scl = v2f{1.1,1.1} + v2f{(float)(sr->sourceRect->x!=16), (float)(sr->sourceRect->x==16||sr->sourceRect->x>56)} * std::sin((e.elapsed+i*6/(float)length)*4)*.05;
+					 if(Manager::won && i == length-1 && !(tail[i]->transform.pos==parentObj->transform.pos))
+					 {
+						 SDL_Rect r1 = parentObj->transform.getScreenRect(), r2 = tail[i]->transform.getScreenRect();
+						 SDL_SetRenderDrawColor(shitrndr::ren, 255, 255, 255, 255);
+						 bool xd = r1.x-r2.x!=0;
+						 shitrndr::FillRect({(r1.x+r2.x)/2, (r1.y+r2.y)/2+r1.h/2, xd?r2.w:(Uint8)(r2.w*.6), xd?(Uint8)(r2.h*.6):r2.h});
+					 }
+					 else if(i!=length-1 || !Manager::won)
+						sr->offset.scl = v2f{1.1,1.1} + v2f{(float)(sr->sourceRect->x!=16), (float)(sr->sourceRect->x==16||sr->sourceRect->x>56)} * std::sin((e.elapsed+i*6/(float)length)*4)*.05;
 					 sr->onEvent(e);
 				}
 				break;
@@ -87,6 +99,7 @@ void Snake::move(const int& x, const int& y)
 		tail[i]->transform.pos = tail[i-1]->transform.pos;
 	tail[0]->transform.pos = parentObj->transform.pos;
 	parentObj->transform.pos += v2f((float)x, (float)y);
+	Audio::playSound(c_move, .2);
 
 	SpriteRen* sr = parentObj->getComponent<SpriteRen>();
 	sr->flipX = x<0;
@@ -96,6 +109,7 @@ void Snake::move(const int& x, const int& y)
 	for(uint8_t i = 0; i < length; i++)
 	{
 		sr = tail[i]->getComponent<SpriteRen>();
+		sr->tex = tex;
 		if(i>0)
 		{
 			sr->enabled = (tail[i-1]->transform.pos-tail[i]->transform.pos).getLengthSquare()>.25;
@@ -104,6 +118,22 @@ void Snake::move(const int& x, const int& y)
 		v2f dp, dn;
 		if(i>0) dp = tail[i-1]->transform.pos - tail[i]->transform.pos;
 		else dp = parentObj->transform.pos - tail[i]->transform.pos;
+		if(dp.x && dp.getLengthSquare()>2.1)
+		{
+			sr->tex = tex_alt;
+			if(dp.y<0)dp.y+=Manager::lGap;
+			else dp.y-=Manager::lGap;
+		}
+		if(i!=length-1)
+		{
+			dn = tail[i+1]->transform.pos-tail[i]->transform.pos;
+			if(dn.getLengthSquare()>2.1)
+			{
+				sr->tex = tex_alt;
+				if(dn.y<0)dn.y+=Manager::lGap;
+				else dn.y-=Manager::lGap;
+			}
+		}
 		if(i==length-1)
 		{
 			sr->sourceRect->x = dp.y==0?64:72;
@@ -111,17 +141,6 @@ void Snake::move(const int& x, const int& y)
 			sr->flipY = dp.y<0;
 			return;
 		}
-		if(dp.getLengthSquare()>2.1)
-		{
-			if(dp.y<0)dp.y+=Manager::lGap;
-			else dp.y-=Manager::lGap;
-		}
-		if(dn.getLengthSquare()>2.1)
-		{
-			if(dn.y<0)dn.y+=Manager::lGap;
-			else dn.y-=Manager::lGap;
-		}
-		dn = tail[i+1]->transform.pos-tail[i]->transform.pos;
 		if(dp.x==0 && dn.x==0) sr->sourceRect->x = 24;
 		else if(dp.y==0 && dn.y==0) sr->sourceRect->x = 16;
 		else

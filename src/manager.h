@@ -9,7 +9,7 @@ struct Manager
 	static v2f wPos, wScl;
 	static MapLoader* ml;
 	static Snake* snake;
-	static bool won;
+	static bool won, switched;
 	static float lGap;
 
 

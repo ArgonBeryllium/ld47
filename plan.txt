@@ -1,25 +1,18 @@
  =TODO=
 - level design
-	- have a list of subversions and use them in different ways
-	- make 7 levels
+	- have a list of subversions and use them in different ways, iterate
+	- make min. 10 levels
 - assets
 	fix maze
-	scale tail
 	sounds:
-		move
-		teleport
-		reset
 		success
+		move (redo, it's horrible)
 	music:
 		main theme (2 versions?)
 === CUTOFF
+- tutorial
 - menu
 	- settings
 		- volume
 		- size
-- screenshake
-- animation system
-- intro
-- ending
 - level select
-- tutorial
