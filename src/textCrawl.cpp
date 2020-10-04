@@ -35,8 +35,8 @@ void TextCrawl::onRenderBG(float d, float t)
 	using namespace bj;
 	if(curP<lines[line].length())
 	{
-		curP += d*15+5*Input::getKey(SDLK_SPACE);
-		if((int)(curP)>(int)(curP-d*15+5*Input::getKey(SDLK_SPACE)) && lines[line][curP] && lines[line][curP] != ' ' && lines[line][curP] != '\n' && lines[line][curP] != ',' && lines[line][curP] != '.')
+		curP += d*15+5*Input::getKey(SDLK_s);
+		if((int)(curP)>(int)(curP-d*15+5*Input::getKey(SDLK_s)) && lines[line][curP] && lines[line][curP] != ' ' && lines[line][curP] != '\n' && lines[line][curP] != ',' && lines[line][curP] != '.')
 			Audio::playSound(c_char, .2);
 	}
 	std::string l;
@@ -52,7 +52,7 @@ void TextCrawl::onRenderBG(float d, float t)
 
 	if(curP>=lines[line].length())
 	{
-		if(!Input::getKey(SDLK_RETURN) && !Input::getKey(SDLK_SPACE)) return;
+		if(!Input::getKey(SDLK_RETURN) &&!Input::getKey(SDLK_SPACE) && !Input::getKey(SDLK_s)) return;
 		curP = 0;
 		line++;
 		if(line==lines.size())SceneManager::setActiveScene(stl);

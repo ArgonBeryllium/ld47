@@ -1,12 +1,7 @@
  =TODO=
-- level design
-	- have a list of subversions and use them in different ways, iterate
-	- make min. 10 levels
 - assets
-	fix maze
 	sounds:
 		success
-		move (redo, it's horrible)
 	music:
 		main theme (2 versions?)
 === CUTOFF

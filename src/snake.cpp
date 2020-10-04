@@ -36,15 +36,7 @@ void Snake::onEvent(const ecs::Event& e)
 				for(uint8_t i = 0; i != length; i++)
 				{
 					 SpriteRen* sr = tail[i]->getComponent<SpriteRen>();
-					 if(Manager::won && i == length-1 && !(tail[i]->transform.pos==parentObj->transform.pos))
-					 {
-						 SDL_Rect r1 = parentObj->transform.getScreenRect(), r2 = tail[i]->transform.getScreenRect();
-						 SDL_SetRenderDrawColor(shitrndr::ren, 255, 255, 255, 255);
-						 bool xd = r1.x-r2.x!=0;
-						 shitrndr::FillRect({(r1.x+r2.x)/2, (r1.y+r2.y)/2+r1.h/2, xd?r2.w:(Uint8)(r2.w*.6), xd?(Uint8)(r2.h*.6):r2.h});
-					 }
-					 else if(i!=length-1 || !Manager::won)
-						sr->offset.scl = v2f{1.1,1.1} + v2f{(float)(sr->sourceRect->x!=16), (float)(sr->sourceRect->x==16||sr->sourceRect->x>56)} * std::sin((e.elapsed+i*6/(float)length)*4)*.05;
+					sr->offset.scl = v2f{1.1,1.1} + v2f{(float)(sr->sourceRect->x!=16), (float)(sr->sourceRect->x==16||sr->sourceRect->x>56)} * std::sin((e.elapsed+i*6/(float)length)*4)*.05;
 					 sr->onEvent(e);
 				}
 				break;
@@ -100,15 +92,29 @@ void Snake::move(const int& x, const int& y)
 	tail[0]->transform.pos = parentObj->transform.pos;
 	parentObj->transform.pos += v2f((float)x, (float)y);
 	Audio::playSound(c_move, .2);
-
+	
 	SpriteRen* sr = parentObj->getComponent<SpriteRen>();
 	sr->flipX = x<0;
 	sr->sourceRect->x = y?8:0;
 	sr->flipY = y<0;
 
+	updateSprites();
+}
+
+bool Snake::onGate()
+{
+	for(auto& p : parentObj->parentScene->getObjs())
+		if((p.second->transform.pos - parentObj->transform.pos).getLength() < .5 && p.second->getComponent<Gate>())
+			return 1;
+	return 0;
+}
+
+
+void Snake::updateSprites()
+{
 	for(uint8_t i = 0; i < length; i++)
 	{
-		sr = tail[i]->getComponent<SpriteRen>();
+		SpriteRen* sr = tail[i]->getComponent<SpriteRen>();
 		sr->tex = tex;
 		if(i>0)
 		{
@@ -136,10 +142,14 @@ void Snake::move(const int& x, const int& y)
 		}
 		if(i==length-1)
 		{
-			sr->sourceRect->x = dp.y==0?64:72;
-			sr->flipX = dp.x<0;
-			sr->flipY = dp.y<0;
-			return;
+			if(!Manager::won)
+			{
+				sr->sourceRect->x = dp.y==0?64:72;
+				sr->flipX = dp.x<0;
+				sr->flipY = dp.y<0;
+				return;
+			}
+			dn = parentObj->transform.pos - tail[i]->transform.pos; 
 		}
 		if(dp.x==0 && dn.x==0) sr->sourceRect->x = 24;
 		else if(dp.y==0 && dn.y==0) sr->sourceRect->x = 16;
@@ -150,12 +160,5 @@ void Snake::move(const int& x, const int& y)
 								((dp.x<0&&dn.y<0)||(dn.x<0&&dp.y<0))?48:56;
 		}
 	}
-}
 
-bool Snake::onGate()
-{
-	for(auto& p : parentObj->parentScene->getObjs())
-		if((p.second->transform.pos - parentObj->transform.pos).getLength() < .5 && p.second->getComponent<Gate>())
-			return 1;
-	return 0;
 }

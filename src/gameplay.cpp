@@ -28,8 +28,9 @@ void Gameplay::onStart()
 			if(e.key==SDLK_r) { Audio::playSound(c_reset, .5); Manager::loadLevel(level); shakeCam(.15, .05); }
 			else if(e.key==SDLK_RETURN && Manager::won)
 			{
+				Audio::playSound(c_reset, .5);
 				level++;
-				if(level==5)SceneManager::setActiveScene(3);
+				if(level==7)SceneManager::setActiveScene(3);
 				else
 				{
 					Manager::loadLevel(level);

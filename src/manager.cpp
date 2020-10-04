@@ -41,11 +41,12 @@ void Manager::init()
 			self->objs[i]->addComponent(new SpriteRen(self->objs[i], wtex));
 			bool ln = i%self->w!=0&&self->tiles[i-1]&&self->tiles[i-1]=='#',
 				 rn = i%self->w<self->w-1&&self->tiles[i+1]&&self->tiles[i+1]=='#',
-				 tn = i>self->w && self->tiles[i-self->w]=='#';
+				 tn = i>self->w && self->tiles[i-self->w]=='#',
+				 bn = i<self->size-self->w && self->tiles[i+self->w]=='#';
 
 			SpriteRen* sr = self->objs[i]->getComponent<SpriteRen>();
 			sr->sourceRect = new SDL_Rect{ln?rn?0:8:rn?16:24, 0, 8, 8};
-			if(tn) sr->sourceRect->x += 32;
+			sr->sourceRect->x += tn?bn?96:32:bn?64:0;
 			//sr->offset.scl.y = 1.75;
 			break;
 		}
@@ -77,7 +78,7 @@ void Manager::switchPlanes()
 	Gameplay::shakeCam(.2, .1);
 	if(!c_gate) c_gate = fileIO::loadSound("res/gate.wav");
 	Audio::playSound(c_gate, .4);
-	if(snake->parentObj->transform.pos == snake->tail[snake->length-1]->transform.pos) win();
+	snake->canMove(0, 0);
 }
 
 void Manager::consume()
@@ -90,4 +91,5 @@ void Manager::win()
 	won = 1;
 	score += cicl;
 	Gameplay::shakeCam(.3, .2);
+	snake->updateSprites();
 }
