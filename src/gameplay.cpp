@@ -1,46 +1,48 @@
 #include "gameplay.h"
 using namespace bj;
-#include "mapLoader.h"
 #include "gate.h"
+#include "manager.h"
 
-static MapLoader ml;
-Snake* Gameplay::snake;
-
+uint8_t Gameplay::level = 0;
 void Gameplay::onStart()
 {
-	ml.parseTileSym = [](MapLoader* self, const float& x, const float& y, uint16_t& i, const char& id)
+	SceneManager::getGlosc()->instantiate()->addComponent(new Behaviour(SceneManager::getGlosc()->getObj(0), [](Behaviour* self, const ecs::Event& e)
 	{
-		using namespace bj;
-		self->objs[i] = new GameObj(); 
-		self->objs[i]->transform.pos = {x, y};
-		switch(id)
+		if(SceneManager::getActiveScene()!=SceneManager::getScene(1)) return;
+		if(e.type==ecs::Event::keyD)
 		{
-		case 'p':
+			if(e.key==SDLK_r)Manager::loadLevel(level);
+			else if(e.key==SDLK_RETURN && Manager::won)
 			{
-				std::string l{};
-				uint16_t ii = i;
-				while(self->tiles[++i]!=';') l+=self->tiles[i];
-				self->objs[ii]->addComponent(new Snake(self->objs[ii], std::stoi(l)));
-				snake = self->objs[ii]->getComponent<Snake>();
-				break;
+				level++;
+				Manager::loadLevel(level);
 			}
-		case 'G':
-			self->objs[i]->addComponent(new Gate(self->objs[i]));
-			break;
-		case '#':
-			self->objs[i]->addComponent(new BasicRen(self->objs[i], {155, 55, 55, 55}));
-			break;
 		}
-	};
+		else if(e.type==ecs::Event::frame) SceneManager::getActiveScene()->cam.scale += e.delta*(Input::getKey(SDLK_i)-Input::getKey(SDLK_o));
+	}));
 }
 
 void Gameplay::onLoad()
 {
-	ml.loadFile("res/tmap.map");
-	ml.apply(this);
-	snake->start();
+	Manager::loadLevel(level);
 };
 void Gameplay::onUnload() {};
 
-void Gameplay::onRenderBG(float d, float t) {}
-void Gameplay::onRenderFG(float d, float t) {}
+void Gameplay::onRenderBG(float d, float t)
+{
+	shitrndr::bg_col = {(Uint8)((std::sin(t)+1)*20),0,(Uint8)((std::sin(t+.2)+1)*30),255};
+}
+void Gameplay::onRenderFG(float d, float t)
+{
+	if(Manager::cicl) UI::renderText(.05, .05, UI::LEFT, 0, ("+"+std::to_string(Manager::cicl)).c_str());
+	for(auto& p : getObjs())
+	{
+		SDL_Rect r = p.second->transform.getScreenRect();
+		UI::renderText(r.x, r.y, UI::CENTRED, 0, std::to_string(p.first).c_str());
+	}
+	if(Manager::won)
+	{
+		UI::renderText(.5, .5, UI::CENTRED, 1, "CYCLE CLOSED", {255,(Uint8)((std::sin(t*2)+1)*127),255,255});
+		UI::renderText(.5, .7, UI::CENTRED, 0, "[ENTER] to continue");
+	}
+}

@@ -1,9 +1,8 @@
 #pragma once
 #include <bj/berryJam.h>
 
-struct Gameplay : public bj::Scene
+struct Menu : public bj::Scene
 {
-	static uint8_t level;
 	void onStart() override;
 	void onLoad() override;
 	void onUnload() override;

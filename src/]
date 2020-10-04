@@ -1,0 +1,68 @@
+#include "manager.h"
+#include "gameplay.h"
+#include "snake.h"
+#include "gate.h"
+#include "consumable.h"
+
+MapLoader* Manager::ml;
+v2f Manager::wPos, Manager::wScl;
+Snake* Manager::snake;
+
+void Manager::init()
+{
+	ml = new MapLoader();
+	ml->parseTileSym = [](MapLoader* self, const float& x, const float& y, uint16_t& i, const char& id)
+	{
+		using namespace bj;
+		self->objs[i] = new GameObj(); 
+		self->objs[i]->transform.pos = {x, y};
+		switch(id)
+		{
+		case 'p':
+			{
+				std::string l{};
+				uint16_t ii = i;
+				while(self->tiles[++i]!=';') l+=self->tiles[i];
+				self->objs[ii]->addComponent(new Snake(self->objs[ii], std::stoi(l)));
+				Manager::snake = self->objs[ii]->getComponent<Snake>();
+				break;
+			}
+		case 'c':
+			self->objs[i]->addComponent(new Consumable(self->objs[i]));
+			break;
+		case 'G':
+			self->objs[i]->addComponent(new Gate(self->objs[i]));
+			break;
+		case 'B':
+			wScl.y = y*2;
+		case '#':
+			self->objs[i]->addComponent(new BasicRen(self->objs[i], {155, 55, 55, 55}));
+			break;
+		}
+	};
+}
+static uint8_t cicl = 0;
+void Manager::loadLevel(uint8_t i)
+{
+	ml->loadFile("res/tmap.map");
+	ml->apply(SceneManager::getActiveScene());
+	snake->start();
+	cicl = 0;
+	wPos = SceneManager::getActiveScene()->cam.getWorldPoint({0,0});
+	SceneManager::getActiveScene()->cam.scale = 7/(float)ml->w;
+	wScl.x = (float)shitrndr::WindowProps::getWidth() * SceneManager::getActiveScene()->cam.getScreenspaceScalar();
+}
+static bool switched = 0;
+void Manager::switchPlanes()
+{
+	SceneManager::getActiveScene()->cam.pos.y += (switched?-1:1) * wScl.y;
+	snake->parentObj->transform.pos.y += (switched?-1:1) * wScl.y;
+	switched=!switched;
+}
+
+uint8_t score;
+void Manager::consume()
+{
+	cicl++;
+	score++;
+}

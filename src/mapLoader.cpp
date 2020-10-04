@@ -84,7 +84,6 @@ void MapLoader::parseTile(const float& x, const float& y, uint16_t& i)
 
 void MapLoader::apply(bj::Scene* target)
 {
-
 	target->cam = cam;
 	target->clearObjs();
 	for(auto p : objs) target->instantiate(p.second);
